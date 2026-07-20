@@ -23,5 +23,5 @@ jobs:
 
       - name: Run script
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ https://discord.com/api/webhooks/1311548823209771091/G_VXKp2ym6NW_6IG_C0DpFBZOWAgKq94TqrPbGyekfky3fEAwBwvTtpBavDhntcJwtAu }}
         run: python main.py
