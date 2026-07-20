@@ -103,6 +103,7 @@ def run():
     items.extend(get_producthunt())
     items.extend(get_betalist())
     items.extend(get_indiehackers())
+    items.extend(get_hackernews())
 
     send_to_discord(items)
 
