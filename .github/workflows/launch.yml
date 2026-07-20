@@ -2,7 +2,7 @@ name: Daily Launch Hunter
 
 on:
   schedule:
-    - cron: "0 6 * * *"   # اجرای خودکار هر روز ساعت ۶ صبح UTC
+    - cron: "0 8 * * *"   # اجرای خودکار هر روز ساعت ۶ صبح UTC
   workflow_dispatch:       # امکان اجرای دستی
 
 jobs:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest   # سیستم عامل اجرا
 
     steps:
-      - uses: actions/checkout@v3   # دریافت کد ریپو
+      - uses: actions/checkout@v4   # دریافت کد ریپو
 
       - name: Setup Python
         uses: actions/setup-python@v5
