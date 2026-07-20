@@ -2,22 +2,26 @@ name: Daily Launch Hunter
 
 on:
   schedule:
-    - cron: "0 6 * * *"   # هر روز ساعت ۶ صبح
-  workflow_dispatch:
+    - cron: "0 6 * * *"   # اجرای خودکار هر روز ساعت ۶ صبح UTC
+  workflow_dispatch:       # امکان اجرای دستی
 
 jobs:
   run:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   # سیستم عامل اجرا
+
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Install Python
+      - uses: actions/checkout@v3   # دریافت کد ریپو
+
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
-      
-      - name: Install deps
+          python-version: "3.10"    # نسخهٔ پایتون
+
+      - name: Install dependencies
         run: pip install feedparser requests beautifulsoup4
-      
+        # کتابخانه‌های لازم برای ProductHunt + BetaList + IndieHackers + HN
+
       - name: Run script
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python main.py
