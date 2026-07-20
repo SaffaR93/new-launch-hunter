@@ -15,7 +15,7 @@ def get_producthunt():
     feed = feedparser.parse(url)
     launches = []
 
-    for entry in feed.entries[:25]:  # فقط ۱۰ لانچ جدید
+    for entry in feed.entries[:25]:  # فقط 25 لانچ جدید
         launches.append({
             "source": "Product Hunt",
             "title": entry.title,
