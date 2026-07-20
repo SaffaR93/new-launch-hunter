@@ -1,21 +1,24 @@
 import requests
 import feedparser
+from bs4 import BeautifulSoup
 from datetime import datetime
+import os
 
 # -----------------------------
-# 1) Discord Webhook
+# Discord Webhook
 # -----------------------------
-WEBHOOK_URL = "https://discord.com/api/webhooks/1311548823209771091/G_VXKp2ym6NW_6IG_C0DpFBZOWAgKq94TqrPbGyekfky3fEAwBwvTtpBavDhntcJwtAu"
+WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
+
 
 # -----------------------------
-# 2) Product Hunt (RSS)
+# Product Hunt (RSS)
 # -----------------------------
 def get_producthunt():
     url = "https://www.producthunt.com/feed"
     feed = feedparser.parse(url)
     launches = []
 
-    for entry in feed.entries[:25]:  # فقط 25 لانچ جدید
+    for entry in feed.entries[:10]:
         launches.append({
             "source": "Product Hunt",
             "title": entry.title,
@@ -23,22 +26,25 @@ def get_producthunt():
         })
     return launches
 
-# -----------------------------
-# 3) BetaList (RSS)
-# -----------------------------
-from bs4 import BeautifulSoup
 
+# -----------------------------
+# BetaList (HTML Scraping)
+# -----------------------------
 def get_betalist():
     url = "https://betalist.com/latest"
-    html = requests.get(url, timeout=10).text
+    try:
+        html = requests.get(url, timeout=10).text
+    except:
+        return []
+
     soup = BeautifulSoup(html, "html.parser")
-
     launches = []
-    items = soup.select(".startup")[:10]
 
+    items = soup.select(".startup")[:10]
     for item in items:
         title = item.select_one(".name").get_text(strip=True)
         link = "https://betalist.com" + item.select_one("a")["href"]
+
         launches.append({
             "source": "BetaList",
             "title": title,
@@ -46,20 +52,25 @@ def get_betalist():
         })
     return launches
 
+
 # -----------------------------
-# 4) IndieHackers (RSS)
+# IndieHackers (HTML Scraping)
 # -----------------------------
 def get_indiehackers():
     url = "https://www.indiehackers.com/launches"
-    html = requests.get(url, timeout=10).text
+    try:
+        html = requests.get(url, timeout=10).text
+    except:
+        return []
+
     soup = BeautifulSoup(html, "html.parser")
-
     launches = []
-    items = soup.select("a.launch-card")[:10]
 
+    items = soup.select("a.launch-card")[:10]
     for item in items:
         title = item.get_text(strip=True)
         link = "https://www.indiehackers.com" + item["href"]
+
         launches.append({
             "source": "IndieHackers",
             "title": title,
@@ -67,14 +78,15 @@ def get_indiehackers():
         })
     return launches
 
-# ------------------------------
-# 5) HackerNews
-#-------------------------------
+
+# -----------------------------
+# HackerNews (Show HN RSS)
+# -----------------------------
 def get_hackernews():
     url = "https://hnrss.org/show"
     feed = feedparser.parse(url)
-
     launches = []
+
     for entry in feed.entries[:10]:
         launches.append({
             "source": "HackerNews Show HN",
@@ -83,20 +95,28 @@ def get_hackernews():
         })
     return launches
 
+
 # -----------------------------
-# 6) ارسال به دیسکورد
+# ارسال به دیسکورد
 # -----------------------------
 def send_to_discord(items):
-    content = f"🔥 **New Website Launches — {datetime.now().strftime('%Y-%m-%d')}**\n\n"
+    if not WEBHOOK_URL:
+        print("ERROR: No webhook URL found.")
+        return
 
-    for item in items:
-        content += f"**{item['source']}** — {item['title']}\n{item['link']}\n\n"
+    if not items:
+        content = "⚠️ امروز هیچ سایت جدیدی پیدا نشد."
+    else:
+        content = f"🔥 **New Website Launches — {datetime.now().strftime('%Y-%m-%d')}**\n\n"
+        for item in items:
+            content += f"**{item['source']}** — {item['title']}\n{item['link']}\n\n"
 
     data = {"content": content}
     requests.post(WEBHOOK_URL, json=data)
 
+
 # -----------------------------
-# 7) اجرای سیستم
+# اجرای سیستم
 # -----------------------------
 def run():
     items = []
@@ -107,4 +127,6 @@ def run():
 
     send_to_discord(items)
 
-run()
+
+if __name__ == "__main__":
+    run()
