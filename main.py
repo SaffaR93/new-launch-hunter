@@ -84,7 +84,7 @@ def get_hackernews():
     return launches
 
 # -----------------------------
-# 5) ارسال به دیسکورد
+# 6) ارسال به دیسکورد
 # -----------------------------
 def send_to_discord(items):
     content = f"🔥 **New Website Launches — {datetime.now().strftime('%Y-%m-%d')}**\n\n"
@@ -96,7 +96,7 @@ def send_to_discord(items):
     requests.post(WEBHOOK_URL, json=data)
 
 # -----------------------------
-# 6) اجرای سیستم
+# 7) اجرای سیستم
 # -----------------------------
 def run():
     items = []
