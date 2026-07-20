@@ -26,16 +26,23 @@ def get_producthunt():
 # -----------------------------
 # 3) BetaList (RSS)
 # -----------------------------
-def get_betalist():
-    url = "https://betalist.com/feed"
-    feed = feedparser.parse(url)
-    launches = []
+from bs4 import BeautifulSoup
 
-    for entry in feed.entries[:10]:
+def get_betalist():
+    url = "https://betalist.com/latest"
+    html = requests.get(url, timeout=10).text
+    soup = BeautifulSoup(html, "html.parser")
+
+    launches = []
+    items = soup.select(".startup")[:10]
+
+    for item in items:
+        title = item.select_one(".name").get_text(strip=True)
+        link = "https://betalist.com" + item.select_one("a")["href"]
         launches.append({
             "source": "BetaList",
-            "title": entry.title,
-            "link": entry.link
+            "title": title,
+            "link": link
         })
     return launches
 
@@ -43,13 +50,34 @@ def get_betalist():
 # 4) IndieHackers (RSS)
 # -----------------------------
 def get_indiehackers():
-    url = "https://www.indiehackers.com/feed"
-    feed = feedparser.parse(url)
-    launches = []
+    url = "https://www.indiehackers.com/launches"
+    html = requests.get(url, timeout=10).text
+    soup = BeautifulSoup(html, "html.parser")
 
-    for entry in feed.entries[:10]:
+    launches = []
+    items = soup.select("a.launch-card")[:10]
+
+    for item in items:
+        title = item.get_text(strip=True)
+        link = "https://www.indiehackers.com" + item["href"]
         launches.append({
             "source": "IndieHackers",
+            "title": title,
+            "link": link
+        })
+    return launches
+
+# ------------------------------
+# 5) HackerNews
+#-------------------------------
+def get_hackernews():
+    url = "https://hnrss.org/show"
+    feed = feedparser.parse(url)
+
+    launches = []
+    for entry in feed.entries[:10]:
+        launches.append({
+            "source": "HackerNews Show HN",
             "title": entry.title,
             "link": entry.link
         })
