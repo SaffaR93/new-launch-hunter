@@ -111,7 +111,7 @@ def send_to_discord(items):
         for item in items:
             content += f"**{item['source']}** — {item['title']}\n{item['link']}\n\n"
 
-    data = {"content": content}
+    data = {"content": content[:1800]}
     requests.post(WEBHOOK_URL, json=data)
 
 
