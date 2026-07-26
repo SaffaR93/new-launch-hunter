@@ -2,7 +2,7 @@ name: Daily Launch Hunter
 
 on:
   schedule:
-    - cron: "0 8 * * *"   # اجرای خودکار هر روز ساعت ۶ صبح UTC
+    - cron: "0 */8 * * *"   # اجرای خودکار هر روز 6 ساعت
   workflow_dispatch:       # امکان اجرای دستی
 
 jobs:
