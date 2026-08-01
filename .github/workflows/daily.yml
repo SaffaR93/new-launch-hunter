@@ -37,6 +37,12 @@ jobs:
 
     - name: Upload output
       uses: actions/upload-artifact@v3
+
+    - name: Send report to Discord
+      run: |
+        curl -H "Content-Type: application/json" \
+        -d "{\"content\": \"Daily report generated. Check surface.json.\"}" \
+        ${{ secrets.DISCORD_WEBHOOK }}
       with:
         name: surface-output
         path: output/surface.json
